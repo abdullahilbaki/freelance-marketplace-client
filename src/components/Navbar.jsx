@@ -154,6 +154,7 @@ const Profile = ({ user, logOut, initialLoading, actionLoading }) => {
             <img
               alt={user.displayName}
               src={user.photoURL}
+              referrerPolicy="no-referrer"
               onError={() => setValidPhoto(false)}
             />
           ) : (

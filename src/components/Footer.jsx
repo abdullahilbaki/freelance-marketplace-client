@@ -40,7 +40,7 @@ const Footer = () => {
           <ul className="space-y-1">
             <li><Link to="/" className="link link-hover">Home</Link></li>
             <li><Link to="/add-task" className="link link-hover">Add Task</Link></li>
-            <li><Link to="/browse-tasks" className="link link-hover">Browse Tasks</Link></li>
+            <li><Link to="/tasks" className="link link-hover">Browse Tasks</Link></li>
             <li><Link to="/my-tasks" className="link link-hover">My Posted Tasks</Link></li>
             <li><Link to="/terms" className="link link-hover">Terms & Conditions</Link></li>
           </ul>

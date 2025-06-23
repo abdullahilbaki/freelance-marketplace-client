@@ -24,7 +24,7 @@ const TaskDetails = () => {
 
     setIsBidding(true);
     try {
-      const res = await fetch(`https://freelance-marketplace-server-seven.vercel.app/tasks/bid/${_id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/tasks/bid/${_id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
       });

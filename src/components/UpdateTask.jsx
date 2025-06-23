@@ -18,7 +18,7 @@ const UpdateTask = () => {
   useEffect(() => {
     if (!user?.email) return;
 
-    fetch(`https://freelance-marketplace-server-seven.vercel.app/my-tasks/${id}?userEmail=${user.email}`)
+    fetch(`${import.meta.env.VITE_BASE_URL}/my-tasks/${id}?userEmail=${user.email}`)
       .then((res) => {
         if (!res.ok) {
           throw new Error("Task not found or you don't have permission.");
@@ -52,7 +52,7 @@ const UpdateTask = () => {
 
     try {
       setUpdating(true);
-      const res = await fetch(`https://freelance-marketplace-server-seven.vercel.app/my-tasks/${id}?userEmail=${user.email}`, {
+      const res = await fetch(`${import.meta.env.VITE_BASE_URL}/my-tasks/${id}?userEmail=${user.email}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedTask),

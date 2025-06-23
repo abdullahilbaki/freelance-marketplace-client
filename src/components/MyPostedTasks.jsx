@@ -28,7 +28,7 @@ const MyPostedTasks = () => {
       setLoading(true);
       try {
         const res = await fetch(
-          `https://freelance-marketplace-server-seven.vercel.app/my-tasks?userEmail=${user.email}`
+          `${import.meta.env.VITE_API_BASE_URL}/my-tasks?userEmail=${user.email}`
         );
         const data = await res.json();
         setTasks(data);
@@ -56,7 +56,7 @@ const MyPostedTasks = () => {
 
     if (confirmed.isConfirmed) {
       try {
-        const res = await fetch(`https://freelance-marketplace-server-seven.vercel.app/my-tasks/${taskId}`, {
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/my-tasks/${taskId}`, {
           method: "DELETE",
         });
         const result = await res.json();

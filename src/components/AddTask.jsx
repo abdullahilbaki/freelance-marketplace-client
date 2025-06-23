@@ -27,7 +27,7 @@ const AddTask = () => {
 
     try {
       setLoading(true);
-      const res = await fetch("https://freelance-marketplace-server-seven.vercel.app/tasks", {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/tasks`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newTask),
