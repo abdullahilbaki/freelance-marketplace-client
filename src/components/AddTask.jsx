@@ -10,7 +10,7 @@ const AddTask = () => {
     throw new Error("Must be used within an AuthProvider");
   }
 
-  const { user } = context;
+  const { user, getIdToken } = context;
   const today = new Date().toISOString().split("T")[0];
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -27,9 +27,13 @@ const AddTask = () => {
 
     try {
       setLoading(true);
+      const token = await getIdToken();
       const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/tasks`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(newTask),
       });
       const result = await res.json();

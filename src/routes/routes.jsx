@@ -21,7 +21,8 @@ const router = createBrowserRouter([
       {
         index: true,
         Component: Home,
-        loader: () => fetch(`${import.meta.env.VITE_API_BASE_URL}/featured-tasks`),
+        loader: () =>
+          fetch(`${import.meta.env.VITE_API_BASE_URL}/featured-tasks`),
         hydrateFallbackElement: <Loading />,
         errorElement: <NotFound />,
       },
@@ -40,7 +41,9 @@ const router = createBrowserRouter([
           </PrivateRoute>
         ),
         loader: async ({ params }) => {
-          const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/tasks/${params.id}`);
+          const res = await fetch(
+            `${import.meta.env.VITE_API_BASE_URL}/tasks/${params.id}`
+          );
           if (!res.ok) {
             throw new Response("Task Not Found", { status: 404 });
           }

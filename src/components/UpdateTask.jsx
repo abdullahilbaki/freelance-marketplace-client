@@ -5,7 +5,8 @@ import { AuthContext } from "../contexts/authContext";
 import { ScaleLoader } from "react-spinners";
 
 const UpdateTask = () => {
-  const { user, initialLoading, actionLoading } = useContext(AuthContext);
+  const { user, getIdToken, initialLoading, actionLoading } =
+    useContext(AuthContext);
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -17,26 +18,33 @@ const UpdateTask = () => {
 
   useEffect(() => {
     if (!user?.email) return;
-
-    fetch(`${import.meta.env.VITE_BASE_URL}/my-tasks/${id}?userEmail=${user.email}`)
-      .then((res) => {
-        if (!res.ok) {
+    const fetchTask = async () => {
+      const token = await getIdToken();
+      try {
+        const res = await fetch(
+          `${import.meta.env.VITE_API_BASE_URL}/my-tasks/${id}?userEmail=${
+            user.email
+          }`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        console.log(res);
+        if (!res.ok)
           throw new Error("Task not found or you don't have permission.");
-        }
-        return res.json();
-      })
-      .then((data) => {
-        if (!data) {
-          setNotFound(true);
-        } else {
-          setTask(data);
-        }
-      })
-      .catch((err) => {
+        const data = await res.json();
+        setTask(data || null);
+        if (!data) setNotFound(true);
+      } catch (err) {
         setNotFound(true);
         Swal.fire("Error", err.message, "error");
-      });
-  }, [id, user?.email]); // Removed navigate from deps
+      }
+    };
+
+    fetchTask();
+  }, [id, user?.email, getIdToken]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -51,12 +59,21 @@ const UpdateTask = () => {
     };
 
     try {
+      const token = await getIdToken();
       setUpdating(true);
-      const res = await fetch(`${import.meta.env.VITE_BASE_URL}/my-tasks/${id}?userEmail=${user.email}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedTask),
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/my-tasks/${id}?userEmail=${
+          user.email
+        }`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(updatedTask),
+        }
+      );
       const result = await res.json();
 
       if (res.ok && (result.success || result.modifiedCount > 0)) {

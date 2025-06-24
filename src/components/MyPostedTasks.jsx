@@ -16,7 +16,7 @@ function formatDate(dateStr) {
 }
 
 const MyPostedTasks = () => {
-  const { user } = useContext(AuthContext);
+  const { user, getIdToken } = useContext(AuthContext);
   const navigate = useNavigate();
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -27,8 +27,16 @@ const MyPostedTasks = () => {
     const fetchMyTasks = async () => {
       setLoading(true);
       try {
+        const token = await getIdToken();
         const res = await fetch(
-          `${import.meta.env.VITE_API_BASE_URL}/my-tasks?userEmail=${user.email}`
+          `${import.meta.env.VITE_API_BASE_URL}/my-tasks?userEmail=${
+            user.email
+          }`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
         const data = await res.json();
         setTasks(data);
@@ -41,9 +49,10 @@ const MyPostedTasks = () => {
     };
 
     fetchMyTasks();
-  }, [user]);
+  }, [user, getIdToken]);
 
   const handleDelete = async (taskId) => {
+    const token = await getIdToken();
     const confirmed = await Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -56,9 +65,15 @@ const MyPostedTasks = () => {
 
     if (confirmed.isConfirmed) {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/my-tasks/${taskId}`, {
-          method: "DELETE",
-        });
+        const res = await fetch(
+          `${import.meta.env.VITE_API_BASE_URL}/my-tasks/${taskId}`,
+          {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         const result = await res.json();
         if (result.success) {
           setTasks(tasks.filter((task) => task._id !== taskId));
@@ -183,55 +198,55 @@ const MyPostedTasks = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {tasks.map(({ _id, title, category, deadline, budget, bidsCount }) => (
-              <tr
-                key={_id}
-              >
-                <td className="px-6 py-4 whitespace-nowrap font-semibold text-sm max-w-xs truncate">
-                  {title}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  {category}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  {formatDate(deadline)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  ${budget.toLocaleString()}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-center space-x-2">
-                  <button
-                    onClick={() => navigate(`/update-task/${_id}`)}
-                    title="Edit"
-                    className="hover:cursor-pointer inline-flex items-center space-x-1 rounded-md px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold"
-                  >
-                    <FaEdit />
-                    <span className="hidden sm:inline">Edit</span>
-                  </button>
-                  <button
-                    onClick={() => handleDelete(_id)}
-                    title="Delete"
-                    className="hover:cursor-pointer inline-flex items-center space-x-1 rounded-md px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold"
-                  >
-                    <MdDelete />
-                    <span className="hidden sm:inline">Delete</span>
-                  </button>
-
-                  <div
-                    className="tooltip"
-                    data-tip={`Bids: ${bidsCount ? bidsCount : 0}`}
-                  >
+            {tasks.map(
+              ({ _id, title, category, deadline, budget, bidsCount }) => (
+                <tr key={_id}>
+                  <td className="px-6 py-4 whitespace-nowrap font-semibold text-sm max-w-xs truncate">
+                    {title}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    {category}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    {formatDate(deadline)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    ${budget.toLocaleString()}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-center space-x-2">
                     <button
-                      title="Bids"
-                      className="hover:cursor-pointer inline-flex items-center space-x-1 rounded-md px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white text-xs font-semibold"
+                      onClick={() => navigate(`/update-task/${_id}`)}
+                      title="Edit"
+                      className="hover:cursor-pointer inline-flex items-center space-x-1 rounded-md px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold"
                     >
-                      <FaBullhorn />
-                      <span className="hidden sm:inline">Bids</span>
+                      <FaEdit />
+                      <span className="hidden sm:inline">Edit</span>
                     </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+                    <button
+                      onClick={() => handleDelete(_id)}
+                      title="Delete"
+                      className="hover:cursor-pointer inline-flex items-center space-x-1 rounded-md px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold"
+                    >
+                      <MdDelete />
+                      <span className="hidden sm:inline">Delete</span>
+                    </button>
+
+                    <div
+                      className="tooltip"
+                      data-tip={`Bids: ${bidsCount ? bidsCount : 0}`}
+                    >
+                      <button
+                        title="Bids"
+                        className="hover:cursor-pointer inline-flex items-center space-x-1 rounded-md px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white text-xs font-semibold"
+                      >
+                        <FaBullhorn />
+                        <span className="hidden sm:inline">Bids</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              )
+            )}
           </tbody>
         </table>
       </div>

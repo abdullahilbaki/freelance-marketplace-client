@@ -40,7 +40,9 @@ const AuthProvider = ({ children }) => {
   }, []);
 
   const createUser = (email, password) => {
-    return withLoading(() => createUserWithEmailAndPassword(auth, email, password));
+    return withLoading(() =>
+      createUserWithEmailAndPassword(auth, email, password)
+    );
   };
 
   const updateUser = (updatedData) => {
@@ -64,6 +66,13 @@ const AuthProvider = ({ children }) => {
     return withLoading(() => signInWithPopup(auth, googleProvider));
   };
 
+  const getIdToken = async () => {
+    if (auth.currentUser) {
+      return await auth.currentUser.getIdToken();
+    }
+    return null;
+  };
+
   const authData = {
     user,
     setUser,
@@ -75,12 +84,11 @@ const AuthProvider = ({ children }) => {
     resetPassword,
     logOut,
     googleLogin,
+    getIdToken,
   };
 
   return (
-    <AuthContext.Provider value={authData}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={authData}>{children}</AuthContext.Provider>
   );
 };
 
