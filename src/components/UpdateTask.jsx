@@ -31,7 +31,6 @@ const UpdateTask = () => {
             },
           }
         );
-        console.log(res);
         if (!res.ok)
           throw new Error("Task not found or you don't have permission.");
         const data = await res.json();
